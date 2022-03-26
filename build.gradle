@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-test:1.5.22.RELEASE') {
+        exclude(module: 'commons-logging')
+    }
+    implementation 'ch.qos.logback:logback-core:1.2.+'
+    testImplementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.22.RELEASE'
+//    implementation 'org.apache.tomcat:tomcat-jdbc:8.5.77'
+//    implementation 'org.postgresql:postgresql:42.2.+'
+    implementation 'com.oracle.database.jdbc:ojdbc6:11.2.0.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
