@@ -15,8 +15,15 @@ public class CommandLineQueryRunner implements CommandLineRunner {
     @Autowired
     private ModelService modelService;
 
+//    @Autowired private ApplicationContext applicationContext;
+
+//    @Autowired private DataSource dataSource;
+
     public void run(String... args) throws Exception {
+//        ApplicationContext ctx = this.applicationContext;
+//        DataSource ds = this.dataSource;
         LOGGER.info("EXECUTING : command line runner");
+//        sleep(1000);
         modelService.tryRequest();
     }
 
