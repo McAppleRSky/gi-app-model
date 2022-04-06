@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.rob.dto.requests.DebtRequestFilterDto;
 import ru.rob.integration.ResponseStatusType;
 import ru.rob.repository.AsuDebtRequestRepository;
 
@@ -24,6 +25,11 @@ public class ModelServiceImpl implements ModelService {
         LOGGER.info(" -> COUNT ids : " + count);
 //        List<Object[]> idTupleList = repository.findIdForSendNative();
         System.out.println();
+    }
+
+    @Override
+    public int formResponses(DebtRequestFilterDto filter) {
+        return 0;
     }
 
 }

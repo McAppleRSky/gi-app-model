@@ -25,6 +25,18 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'com.google.guava:guava:14.0.1'
+    compileOnly 'javax:javaee-api:7.0'
+    implementation 'org.glassfish.main.extras:glassfish-embedded-all:4.0'
+    implementation 'org.infinispan:infinispan-core:7.2.5.Final'
+    implementation 'org.mozilla:rhino:1.7R4'
+//    implementation 'org.hibernate:hibernate-infinispan:5.3.11.Final'
+//    implementation 'org.hibernate:hibernate-core:4.3.11.Final'
+    implementation 'com.google.code.gson:gson:2.2.2'
+//    implementation 'org.hibernate:hibernate-hikaricp:4.3.11.Final'
+
 }
 
 test {
