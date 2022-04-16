@@ -1,4 +1,4 @@
-package ru.rob.bean;
+package ru.rob.handbooks;
 
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
@@ -9,58 +9,47 @@ import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.git.gkh.SessionFactoryType;
-import ru.git.gkh.capremont.tasks.TaskParams;
-import ru.git.gkh.core.enums.DebtResponseStatus;
-import ru.git.gkh.dto.debtRequests.DebtRequestFilterDto;
-import ru.git.gkh.dto.debtRequests.DebtRequestPage;
-import ru.git.gkh.dto.debtRequests.DebtRequestView;
-import ru.git.gkh.entity.gisconfig.GisUser;
-import ru.git.gkh.entity.preferences.debtRequests.DebtRequest;
-import ru.git.gkh.entity.preferences.debtRequests.DebtResponse;
-import ru.git.gkh.entity.preferences.debtRequests.DebtResponseCourtSolution;
-import ru.git.gkh.entity.preferences.debtRequests.DebtResponseDetail;
-import ru.git.gkh.entity.sec.Usr;
-import ru.git.gkh.gis.task.FormResponsesTask;
-import ru.git.gkh.utils.SomeUtils;
-import ru.git.gkh.utils.task.TaskObserver;
-import ru.git.gkh.utils.task.TaskObserverFactory;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.springframework.stereotype.Component;
+import ru.rob.handbooks.entity.DebtRequest;
+import ru.rob.handbooks.entity.DebtResponse;
+import ru.rob.handbooks.entity.DebtResponseCourtSolution;
+import ru.rob.handbooks.entity.DebtResponseDetail;
+import ru.rob.handbooks.enums.DebtResponseStatus;
+import ru.rob.handbooks.util.SomeUtils;
 
-import javax.annotation.Resource;
-import javax.ejb.Local;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Stateless
-@Local
-@SuppressWarnings("unchecked")
-public class DebtRequestBean {
+@Component
+public class DebtRequestBeanImpl implements DebtRequestBean{
 
-    private static final Logger log = LoggerFactory.getLogger(DebtRequestBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebtRequestBeanImpl.class);
 
-    private FormResponsesTask task;
+//    private FormResponsesTask task;
 
-    @Resource(lookup = "concurrent/Common")
-    private ManagedExecutorService managedExecutorService;
+//    @Resource(lookup = "concurrent/Common")
+//    private ManagedExecutorService managedExecutorService;
 
-    @Inject
-    @ru.git.gkh.SessionFactory(SessionFactoryType.GKH)
-    private SessionFactory gkhSessionFactory;
+//    @Inject
+//    @ru.git.gkh.SessionFactory(SessionFactoryType.GKH)
+//    private SessionFactory gkhSessionFactory;
+@PersistenceContext
+private EntityManager entityManager;
 
-    @Inject
-    @ru.git.gkh.SessionFactory(SessionFactoryType.PM)
-    private SessionFactory pmSessionFactory;
+//    @Inject
+//    @ru.git.gkh.SessionFactory(SessionFactoryType.PM)
+//    private SessionFactory pmSessionFactory;
 
-    @Resource
-    private SessionContext ctx;
+//    @Resource
+//    private SessionContext ctx;
 
-    public DebtRequestPage getRequestList(final DebtRequestFilterDto filter){
+    /*public DebtRequestPage getRequestList(final DebtRequestFilterDto filter){
         final Session session = gkhSessionFactory.openSession();
         try {
             final List<DebtRequest> list = createCriteria(
@@ -86,7 +75,7 @@ public class DebtRequestBean {
         } finally {
             SomeUtils.close(session);
         }
-    }
+    }*/
 
     public <TEntity> Criteria createCriteria(final Class<TEntity> clazz, final Session session, final DebtRequestFilterDto filter, final boolean isSelectCriteria){
         final Criteria criteria = session.createCriteria(clazz);
@@ -110,8 +99,8 @@ public class DebtRequestBean {
         return criteria;
     }
 
-    public DebtRequestView getRequestItem(final String id){
-        final Session session = gkhSessionFactory.openSession();
+    /*public DebtRequestView getRequestItem(final String id){
+        final Session session = //gkhSessionFactory.openSession();
         try {
             final DebtRequest request = (DebtRequest) session
                     .createCriteria(DebtRequest.class)
@@ -121,8 +110,8 @@ public class DebtRequestBean {
         } finally {
             SomeUtils.close(session);
         }
-    }
-    public void startFormResponsesTask(final DebtRequestFilterDto filter){
+    }*/
+    /*public void startFormResponsesTask(final DebtRequestFilterDto filter){
         final TaskObserver observer = TaskObserverFactory.getTaskObserver();
         final Long taskId = System.currentTimeMillis();
         final String description = "Формирование ответов";
@@ -131,13 +120,15 @@ public class DebtRequestBean {
         params.put("filter", filter);
         task = new FormResponsesTask(params, this);
         managedExecutorService.submit(task);
-    }
+    }*/
 
     public int formResponses(final DebtRequestFilterDto filter) throws Exception {
         Session gkhSession = null;
         try {
             int formedResponsesCount = 0;
-            gkhSession = gkhSessionFactory.openSession();
+            gkhSession = //gkhSessionFactory.openSession();
+            //Session session =
+                    (Session) entityManager.getDelegate();
 
             final List<DebtRequest> requests = createCriteria(
                     DebtRequest.class,
@@ -148,18 +139,18 @@ public class DebtRequestBean {
 
             int progress = 0;
             for(int i = 0; i < requests.size(); i++) {
-                progress = task.updateProgress(i, requests.size(), 10, progress);
+                //progress = task.updateProgress(i, requests.size(), 10, progress);
                 final DebtRequest request = requests.get(i);
                 if(request.response == null)
                     try {
-                        final Usr user = SomeUtils.extractUser(gkhSession, ctx);
+                        /*final Usr user = SomeUtils.extractUser(gkhSession, ctx);
                         final GisUser gisUser = (GisUser) gkhSession.get(GisUser.class, user.getId());
                         if(gisUser == null)
-                            throw new Exception("У пользователя \"".concat(user.getCaption() + "\" не добавлен идентификатор ГИС"));
+                            throw new Exception("У пользователя \"".concat(user.getCaption() + "\" не добавлен идентификатор ГIС"));*/
 
                         request.response = new DebtResponse();
-                        request.response.executorFio = gisUser.fio;
-                        request.response.executorGuid = gisUser.userGuid;
+//                        request.response.executorFio = gisUser.fio;
+//                        request.response.executorGuid = gisUser.userGuid;
 
                         final List<Map<String, Object>> flsDebtList = findFlsList(gkhSession, request);
                         final List<String> flsHasDebtList = flsDebtList.stream()
@@ -193,7 +184,7 @@ public class DebtRequestBean {
                         gkhSession.flush();
                         formedResponsesCount++;
                     } catch (SQLException | HibernateException e) {
-                        log.error(e.getMessage(), e);
+                        LOGGER.error(e.getMessage(), e);
                         continue;
                     }
             }
@@ -208,14 +199,14 @@ public class DebtRequestBean {
         if(executionList == null || executionList.isEmpty())
             return Collections.emptyList();
 
-        return (List<DebtResponseCourtSolution>) session.createSQLQuery(
-                        " select  fs.FILE_NAME||'.'||fs.FILE_EXT AS fileName, " +
-                                "        fs.FILE_PATH||'.'||fs.FILE_EXT AS filePath, " +
-                                "        fs.DESCRIPTION AS description " +
-                                " from task_document td " +
-                                "         JOIN FILE_STORAGE fs ON fs.id = td.FSID " +
-                                " WHERE td.EXECUTION_ID in ( :executionList ) " +
-                                "  AND td.DELETE_DATE IS null " )
+        return (List<DebtResponseCourtSolution>) session
+                .createSQLQuery("" +
+                        "  SELECT fs.FILE_NAME||'.'||fs.FILE_EXT AS fileName, " +
+                        "         fs.FILE_PATH||'.'||fs.FILE_EXT AS filePath, " +
+                        "         fs.DESCRIPTION AS description " +
+                        "    FROM task_document td JOIN FILE_STORAGE fs ON fs.id = td.FSID " +
+                        "   WHERE td.EXECUTION_ID IN ( :executionList )" +
+                        "         AND td.DELETE_DATE IS null ")
                 .addScalar("fileName", StandardBasicTypes.STRING)
                 .addScalar("filePath", StandardBasicTypes.STRING)
                 .addScalar("description", StandardBasicTypes.STRING)
@@ -228,17 +219,18 @@ public class DebtRequestBean {
     private List<Map<String, Object>> findDebtorList(final List<String> flsList, final Date startDate, final Date endDate) throws Exception {
         Session pmSession = null;
         try {
-            pmSession = pmSessionFactory.openSession();
+            pmSession = //pmSessionFactory.openSession();
+            (Session) entityManager.getDelegate();
+
             if(!flsList.isEmpty()) {
                 final List<Map<String, Object>> result = new ArrayList<>();
-                final List<Map<String, Object>> debtorList = pmSession.createSQLQuery(
-                                " SELECT DISTINCT  " +
-                                        " pd.id AS debtorId, " +
-                                        " nvl(pd.name,'не указано') as debtorFio " +
-                                        " FROM PIR_FLS pf  " +
-                                        " JOIN PIR_OWNER_INFO oi ON oi.FLS_ID = pf.ID  " +
-                                        " JOIN PIR_DEBTOR pd ON pd.id = oi.DEBTOR_ID " +
-                                        " WHERE pf.FULLNUM IN (:flsList) ")
+                final List<Map<String, Object>> debtorList = pmSession
+                        .createSQLQuery("" +
+                                "SELECT DISTINCT pd.id AS debtorId, " +
+                                "                nvl(pd.name,'не указано') as debtorFio " +
+                                "           FROM PIR_FLS pf JOIN PIR_OWNER_INFO oi ON oi.FLS_ID = pf.ID " +
+                                "                JOIN PIR_DEBTOR pd ON pd.id = oi.DEBTOR_ID " +
+                                "          WHERE pf.FULLNUM IN (:flsList) ")
                         .addScalar("debtorFio", StandardBasicTypes.STRING)
                         .addScalar("debtorId", StandardBasicTypes.LONG)
                         .setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
@@ -247,15 +239,14 @@ public class DebtRequestBean {
 
                 for (Map<String, Object> map : debtorList){
                     final Long debtorId = (Long) map.get("debtorId");
-                    final List<Map<String, Object>> executionList = pmSession.createSQLQuery(
-                                    "SELECT DISTINCT  " +
-                                            " act.EXECUTION_ID_ as executionId  " +
-                                            " from PIR_LAWSUIT pl  " +
-                                            " JOIN PIR_UNION pu ON pu.id = pl.UNION_ID  " +
-                                            " JOIN ACT_RU_TASK act ON pu.\"INSTANCE\" = act.EXECUTION_ID_  " +
-                                            "    AND act.TASK_DEF_KEY_ = 'desicionCourOrder' " +
-                                            " WHERE pl.DEBTOR_ID = :debtorId  " +
-                                            "    AND pu.INIT_PERIOD BETWEEN :startDate AND :endDate ")
+                    final List<Map<String, Object>> executionList = pmSession
+                            .createSQLQuery("" +
+                                    "SELECT DISTINCT act.EXECUTION_ID_ as executionId  " +
+                                    "           from PIR_LAWSUIT pl JOIN PIR_UNION pu ON pu.id = pl.UNION_ID  " +
+                                    "                JOIN ACT_RU_TASK act ON pu.\"INSTANCE\" = act.EXECUTION_ID_  " +
+                                    "                AND act.TASK_DEF_KEY_ = 'desicionCourOrder' " +
+                                    "          WHERE pl.DEBTOR_ID = :debtorId  " +
+                                    "                AND pu.INIT_PERIOD BETWEEN :startDate AND :endDate ")
                             .addScalar("executionId", StandardBasicTypes.STRING)
                             .setLong("debtorId", debtorId)
                             .setDate("startDate", startDate)
@@ -278,19 +269,20 @@ public class DebtRequestBean {
     }
 
     private List<Map<String, Object>> findFlsList(final Session session, final DebtRequest request) {
-        final Query query = session.createSQLQuery(
-                        "   select nvl(sum(d.balance), 0) as debtSum, f.fullnum as flsNumber " +
-                                "   from fias_house fh " +
-                                "             join house h on h.fias_house = fh.fiasid   " +
-                                "             join house_addr ha on ha.addr = h.addr   " +
-                                "             join fls f on f.house = h.addr   " +
-                                "             join fls_flat ff on ff.fls = f.id   " +
-                                "             join flat fl on fl.addr = ff.flat   " +
-                                (request.flatNumber != null ? " and fl.nomer = :flatNumber " : "") +
-                                "             left join debt d on d.fls = f.id " +
-                                "               and d.period between :startDate and :endDate " +
-                                " where fh.houseguid = :fiasGuid " +
-                                " group by f.fullnum " )
+        final Query query = session
+                .createSQLQuery("" +
+                        "  SELECT nvl(sum(d.balance), 0) AS debtSum, f.fullnum AS flsNumber " +
+                        "    FROM fias_house fh JOIN house h ON h.fias_house = fh.fiasid " +
+                        "         JOIN house_addr ha ON ha.addr = h.addr " +
+                        "         JOIN fls f ON f.house = h.addr " +
+                        "         JOIN fls_flat ff ON ff.fls = f.id " +
+                        "         JOIN flat fl ON fl.addr = ff.flat " +
+                        (request.flatNumber != null ? " AND fl.nomer = :flatNumber " : "") +
+                        "         LEFT JOIN debt d ON d.fls = f.id " +
+                        "         AND d.period between :startDate " +
+                        "         AND :endDate " +
+                        "   WHERE fh.houseguid = :fiasGuid " +
+                        "GROUP BY f.fullnum " )
                 .addScalar("flsNumber", StandardBasicTypes.STRING)
                 .addScalar("debtSum", StandardBasicTypes.BIG_DECIMAL)
                 .setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)

@@ -5,11 +5,21 @@ plugins {
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+compileJava   {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'windows-1251'
+}
+compileTestJava.options.encoding = 'windows-1251'
+javadoc.options.encoding = 'windows-1251'
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
+//    implementation 'com.inlabsoft.hikari:hikari-core:2.0.9'
+//    implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation('org.springframework.boot:spring-boot-starter-test:1.5.22.RELEASE') {
         exclude(module: 'commons-logging')
     }

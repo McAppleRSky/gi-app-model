@@ -24,7 +24,8 @@ public class CommandLineQueryRunner implements CommandLineRunner {
 //        DataSource ds = this.dataSource;
         LOGGER.info("EXECUTING : command line runner");
 //        sleep(1000);
-        modelService.tryRequest();
+//        modelService.tryRequest();
+        modelService.DebtResponseTaskTry();
     }
 
 }

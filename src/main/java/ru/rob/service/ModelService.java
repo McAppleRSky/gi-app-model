@@ -1,11 +1,12 @@
 package ru.rob.service;
 
-import ru.rob.dto.requests.DebtRequestFilterDto;
+import ru.rob.handbooks.DebtRequestFilterDto;
 
 public interface ModelService {
 
     void tryRequest();
 
-    int formResponses(DebtRequestFilterDto filter);
+//    int formResponses(DebtRequestFilterDto filter);
 
+    void DebtResponseTaskTry();
 }

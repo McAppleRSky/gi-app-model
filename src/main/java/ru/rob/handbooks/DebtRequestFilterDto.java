@@ -1,10 +1,7 @@
-package ru.rob.dto.requests;
+package ru.rob.handbooks;
 
 import com.google.common.base.Strings;
-//import ru.git.gkh.core.enums.DebtResponseStatus;
-import ru.rob.gkh.DebtResponseStatus;
-//import ru.git.gkh.core.utils.SynchrDateFormat;
-import ru.rob.gkh.SynchrDateFormat;
+import ru.rob.handbooks.enums.DebtResponseStatus;
 
 import java.util.Date;
 
@@ -52,4 +49,5 @@ public class DebtRequestFilterDto {
         dto.responseEndDate = SynchrDateFormat.parseDateNotThrows(responseEndDateStr);
         return dto;
     }
+
 }
